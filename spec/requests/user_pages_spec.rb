@@ -34,11 +34,18 @@ describe "User Pages" do
         		fill_in "Password",     with: "foobar"
         		fill_in "Confirmation", with: "foobar"
       		end
-      		it "should create a user" do
-        		expect { click_button submit }.to change(User, :count).by(1)
+      		describe "after saving the user" do
+        		before { click_button submit }
+        		let(:user) { User.find_by(email: 'user@example.com') }
+        		it { should have_link('Sign out') }
+        		it { should have_title(user.name) }
+        		it { should have_selector('div.alert.alert-success', text: 'Welcome') }
       		end
-      		
-      		it { should have_content('Welcome to the Sample App!') }
+      		it "should create a user and flash a welcome message" do
+        		expect { click_button submit }.to change(User, :count).by(1)
+      			current_path.should eq("/users/1")
+      			should have_content('Welcome to the Sample App!')
+      		end
     	end
   	end
 end
